@@ -1,0 +1,171 @@
+-----------------------------------------------
+---------------- C3@ code list ----------------
+-----------------------------------------------
+PROC_factorial:skip
+
+pmb PROC_factorial
+
+T0 = 0
+
+result_0_2 = T0
+
+T1 = 0
+
+T2= num_0_1 EQ T1
+
+if T2=true goto LABEL_0
+
+go_to LABEL_1
+
+LABEL_0:skip
+
+T3 = 1
+
+result_0_2 = T3
+
+go_to LABEL_2
+
+LABEL_1:skip
+
+T4 = 1
+
+T5 = num_0_1 sub T4
+
+param PROC_factorial(T5)
+
+call PROC_factorial
+
+T6 = return PROC_factorial
+
+T7 = num_0_1 prod T6
+
+result_0_2 = T7
+
+LABEL_2:skip
+
+rtn result_0_2
+
+PROC_recursiveAdding:skip
+
+pmb PROC_recursiveAdding
+
+T8 = 0
+
+result_1_2 = T8
+
+T9 = 1
+
+T10= num_0_1 LT T9
+
+if T10=true goto LABEL_3
+
+go_to LABEL_4
+
+LABEL_3:skip
+
+T11 = "Invalid number: "
+output T11
+
+output num_0_1
+
+T12 = "\n"
+output T12
+
+T13 = 0
+
+result_1_2 = T13
+
+go_to LABEL_5
+
+LABEL_4:skip
+
+T14 = 1
+
+T15= num_0_1 EQ T14
+
+if T15=true goto LABEL_6
+
+go_to LABEL_7
+
+LABEL_6:skip
+
+T16 = 1
+
+result_1_2 = T16
+
+LABEL_5:skip
+
+go_to LABEL_8
+
+LABEL_7:skip
+
+T17 = 1
+
+T18 = num_0_1 sub T17
+
+param PROC_recursiveAdding(T18)
+
+call PROC_recursiveAdding
+
+T19 = return PROC_recursiveAdding
+
+T20 = num_0_1 add T19
+
+result_1_2 = T20
+
+LABEL_8:skip
+
+rtn result_1_2
+
+main:skip
+
+pmb PROC_main
+
+T21 = 5
+
+numA_2_2 = T21
+
+T22 = 10
+
+numB_2_2 = T22
+
+T23 = "FACTORIAL "
+output T23
+
+output numA_2_2
+
+T24 = "! :"
+output T24
+
+param PROC_factorial(numA_2_2)
+
+call PROC_factorial
+
+T25 = return PROC_factorial
+
+output T25
+
+T26 = "\n"
+output T26
+
+T27 = "RECURSIVE ADDING "
+output T27
+
+output numB_2_2
+
+T28 = " :"
+output T28
+
+param PROC_recursiveAdding(numB_2_2)
+
+call PROC_recursiveAdding
+
+T29 = return PROC_recursiveAdding
+
+output T29
+
+T30 = "\n"
+output T30
+
+rtn
+

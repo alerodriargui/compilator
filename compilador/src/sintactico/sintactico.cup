@@ -1,0 +1,2042 @@
+package compilador.src.sintactico;
+
+import compilador.src.backend.Backend;
+import compilador.src.c3a.GeneratorC3A;
+import compilador.src.c3a.InstructionC3A.Code;
+import compilador.src.errores.LexicalError;
+import compilador.src.errores.SemanticError;
+import compilador.src.errores.SymbolsTableError;
+import compilador.src.errores.SyntaxError;
+import compilador.src.generatorAssembler.GeneratorAssembler;
+import compilador.src.lexico.Lexico;
+import compilador.src.symbols.*;
+import compilador.src.symbolsTable.SymbolsTable;
+import compilador.src.symbolsTable.Type;
+import compilador.src.symbolsTable.Type.Tipo;
+import compilador.src.symbolsTable.Type.TipoSubyacente;
+import java_cup.runtime.ComplexSymbolFactory;
+import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
+import java_cup.runtime.ComplexSymbolFactory.Location;
+import java_cup.runtime.Symbol;
+
+import java.util.ArrayList;
+import java.util.Stack;
+
+class Parser;
+
+parser code
+{:
+  private SymbolsTable symbolsTable;
+  private Backend backend;
+  private Lexico lexico;
+  private GeneratorC3A c3a_g;
+  private GeneratorAssembler assembler;
+
+  private Stack<String> labelTrueStack;
+  private Stack<String> labelFalseStack;
+
+  public Parser(Lexico lexico, ComplexSymbolFactory sf){
+    super(lexico, sf);
+    this.lexico = lexico;
+    this.symbolsTable = new SymbolsTable();
+    this.backend = new Backend(symbolsTable);
+    this.c3a_g = new GeneratorC3A(backend);
+    this.assembler = new GeneratorAssembler(symbolsTable, backend, c3a_g);
+    this.labelTrueStack = new Stack<String>();
+    this.labelFalseStack = new Stack<String>();
+  }
+
+  private void closeErrorFiles(){
+    SymbolsTableError.closeFile();
+    SyntaxError.closeFile();
+    SemanticError.closeFile();
+    LexicalError.closeFile();
+  }
+
+  public void syntax_error(Symbol s) {
+    try {
+      ArrayList<Integer> expected = new ArrayList<Integer>(expected_token_ids());
+      ArrayList<String> expected_names = new ArrayList<String>();
+
+      for(Integer i : expected){
+        expected_names.add(symbl_name_from_id(i));
+      }
+
+      throw new SyntaxError((ComplexSymbol) s, expected_names, true);
+    } catch (Exception e) {
+		};
+  }
+
+  public void unrecovered_syntax_error(Symbol s){
+    try {
+      ArrayList<Integer> expected = new ArrayList<Integer>(expected_token_ids());
+      ArrayList<String> expected_names = new ArrayList<String>();
+
+      for(Integer i : expected){
+        expected_names.add(symbl_name_from_id(i));
+      }
+
+      lexico.closeTokensFile((s.left+1), (s.right+1));
+
+      throw new SyntaxError((ComplexSymbol) s, expected_names, false);
+    } catch (Exception e) {
+      closeErrorFiles();
+		};
+  }
+
+  private void initTypes() {
+    try{
+      //init NUMBER type
+      Type number_type = new Type(Tipo.dtype, TipoSubyacente.TS_NUMBER, 4, Integer.MIN_VALUE, Integer.MIN_VALUE);
+      symbolsTable.add("number", number_type);
+
+      // init String type
+      Type str_type = new Type(Tipo.dtype, TipoSubyacente.TS_STRING, 2, 0, 0);
+      symbolsTable.add("string", str_type);
+
+      //init BOOLEAN type
+      Type bool_type = new Type(Tipo.dtype,TipoSubyacente.TS_BOOLEAN,2,0,1);
+      symbolsTable.add("boolean",bool_type);
+
+      //init VOID type
+      Type void_type = new Type(Tipo.dtype, TipoSubyacente.TS_NULL, 0, 0, 0);
+      symbolsTable.add("void", void_type);
+    }catch (SymbolsTableError e){
+      closeErrorFiles();
+    }
+  }
+
+:};
+
+/******Declaració de simbols terminals*********/
+
+terminal String id, number, string, bool,  op_relational, op_logical, op_logical_not, op_arithmetical_c, op_arithmetical_b;
+terminal        op_assig, inst_if, inst_elif, inst_else,
+                inst_while, inst_function, inst_return, constant,
+                instr_read, instr_print, lparen, rparen, lbracket, rbracket, semicolon,
+                comma, two_points, inst_main;
+
+/*
+  inst_switch, inst_case, inst_break, inst_default, inst_for,
+  character,spc_asgmul,spc_asgdec, spc_dec,spc_asgdiv,spc_asginc,spc_inc
+*/
+
+
+/******Declaració de simbols no terminals*********/
+
+non terminal  SymbolStarts                STARTS;
+non terminal  SymbolInit                  INIT;
+
+non terminal  SymbolMMain                 M_MAIN;
+non terminal  SymbolMain                  MAIN;
+non terminal  SymbolMainInstr             MAIN_INSTRUCTIONS;
+
+non terminal  SymbolInstructions          INSTRUCTIONS;
+non terminal  SymbolInstruction           INSTRUCTION;
+
+non terminal  SymbolBlockIn               BLOCK_IN;
+non terminal  SymbolBlockOut              BLOCK_OUT;
+
+non terminal  SymbolDeclarations          DECLARATIONS;
+
+non terminal  SymbolConstant              CONSTANT;
+
+non terminal  SymbolNumberVal             NUMBER_VALUE;
+non terminal  SymbolIdVal                 ID_VALUE;
+non terminal  SymbolStringVal             STRING_VALUE;
+non terminal  SymbolBoolVal               BOOLEAN_VALUE;
+
+non terminal  SymbolValue                 VALUE;
+
+non terminal  SymbolOperatorAssignation   OPERATOR_ASSIG;
+non terminal  SymbolInstructionOut        INSTRUCTION_OUT;
+
+non terminal  SymbolArithOperator         ARITH_OP;
+non terminal  SymbolArithOperation        ARITHMETICAL_OPERATION;
+non terminal  SymbolArithValue            ARITHMETICAL_VALUE;
+
+non terminal  SymbolBoolOp                BOOLEAN_OPERATION;
+non terminal  SymbolBoolOpValue           BOOLEAN_OP_VALUE;
+non terminal  SymbolValueComparison       VALUE_COMPARISON;
+non terminal  SymbolMEnd                  M_END;
+non terminal  SymbolCondition             COND;
+non terminal  SymbolConditionFalse        COND_F;
+non terminal  SymbolConditionTrue         COND_T;
+non terminal  SymbolInstructionIf         INSTRUCTION_IF;
+non terminal  SymbolElif                  ELIF;
+non terminal  SymbolElse                  ELSE;
+non terminal  SymbolMWhile                M_WHILE;
+non terminal  SymbolInstructionWhile      INSTRUCTION_WHILE;
+/*
+non terminal  SymbolInstructionFor        INSTRUCTION_FOR;
+non terminal  SymbolInternalFor           INTERNAL_FOR;
+non terminal  SymbolInstructionSwitch     INSTRUCTION_SWITCH;
+non terminal  SymbolCases                 CASES;
+non terminal  SymbolCaseDefault           CASE_DEFAULT;
+*/
+non terminal  SymbolDeclareFunctions      DECLARE_FUNCTIONS;
+non terminal  SymbolDefFunction           DEFINE_FUNCTION;
+non terminal  SymbolFunInit               FUNCTION_INIT;
+non terminal  SymbolFunParams             FUNCTION_PARAMS;
+non terminal  SymbolFunWParams            FUNCTION_W_PARAMS;
+non terminal  SymbolFunInstructions       FUNCTION_INSTRUCTIONS;
+non terminal  SymbolFunReturn             FUNCTION_RETURN;
+
+non terminal  SymbolCallFunction          CALL_FUNCTION;
+non terminal  SymbolCallBody              CALL_BODY;
+
+non terminal  SymbolEmpty                 EMPTY;
+
+// precedences
+precedence left op_arithmetical_b;
+precedence left op_arithmetical_c;
+precedence left op_logical;
+precedence left op_logical_not;
+
+start with STARTS;
+
+STARTS                      ::=  INIT DECLARE_FUNCTIONS
+                            {:
+                            // close symbolsTable.txt file
+                              symbolsTable.closeSymbolsTableFiles();
+                              backend.storeTables();
+
+                              //NOT OPTIMIZED CODE
+                              c3a_g.savec3aInFile(false);
+                              assembler.generateAssembler(false);
+
+                              /*
+                               OPTIMIZED CODE, NOT IMPLEMENTED
+                              c3a_g.optimize();
+                              c3a_g.savec3aInFile(true);
+                              assembler.generateAssembler(true);
+                              */
+
+                              closeErrorFiles();
+                            :};
+
+INIT                        ::= {:
+                              initTypes();
+                              RESULT = new SymbolInit();
+                            :};
+
+DECLARE_FUNCTIONS           ::= DEFINE_FUNCTION DECLARE_FUNCTIONS
+                            {:
+                              RESULT = new SymbolDeclareFunctions();
+                            :}
+                            | MAIN
+                            {:
+                              RESULT = new SymbolDeclareFunctions();
+                            :};
+
+MAIN                        ::= inst_function inst_main M_MAIN lparen rparen lbracket BLOCK_IN MAIN_INSTRUCTIONS BLOCK_OUT rbracket {:
+                              c3a_g.generateC3aInstr(
+                                Code.rtn,
+                                null,
+                                null,
+                                "PROC_main"
+                              );
+
+                              RESULT = new SymbolMain();
+                            :};
+
+M_MAIN                      ::=
+                            {:
+
+                              String backId = backend.addMain();
+                              Type fun_type = new Type(backId, Tipo.dfun, null);
+                              symbolsTable.add("main", fun_type);
+
+                              c3a_g.generateC3aInstr(
+                                Code.skip,
+                                null,
+                                null,
+                                "main"
+                              );
+
+                              c3a_g.generateC3aInstr(
+                                Code.pmb,
+                                null,
+                                null,
+                                backId
+                              );
+
+                              RESULT = new SymbolMMain();
+                            :};
+
+MAIN_INSTRUCTIONS           ::= INSTRUCTIONS
+                            {:
+                              RESULT = new SymbolMainInstr();
+                            :}
+                            | EMPTY
+                            {:
+                              RESULT = new SymbolMainInstr();
+                            :};
+
+INSTRUCTIONS                ::= INSTRUCTIONS INSTRUCTION
+                            {:
+                              RESULT = new SymbolInstructions();
+                            :}
+                            | INSTRUCTION
+                            {:
+                              RESULT = new SymbolInstructions();
+                            :};
+
+INSTRUCTION                 ::=  DECLARATIONS semicolon
+                            {:
+                              RESULT = new SymbolInstruction();
+                            :}
+                            | INSTRUCTION_IF
+                            {:
+                              RESULT = new SymbolInstruction();
+                            :}
+                            | INSTRUCTION_WHILE
+                            {:
+                              RESULT = new SymbolInstruction();
+                            :}
+                            | OPERATOR_ASSIG semicolon
+                            {:
+                              RESULT = new SymbolInstruction();
+                            :}
+                            | INSTRUCTION_OUT semicolon
+                            {:
+                              RESULT = new SymbolInstruction();
+                            :}
+                            | CALL_FUNCTION semicolon
+                            {:
+                              RESULT = new SymbolInstruction();
+                            :};
+
+BLOCK_IN                    ::=
+                            {:
+                              symbolsTable.enterBlock();
+                              RESULT = new SymbolBlockIn();
+                            :};
+
+BLOCK_OUT                   ::=
+                            {:
+                              try{
+                                symbolsTable.leaveBlock();
+                                RESULT = new SymbolBlockOut();
+                              }catch(SymbolsTableError e){
+                                throw new SemanticError(e.getMessage());
+                              }
+                            :};
+
+DECLARATIONS                ::=  id:var_id comma DECLARATIONS:declarations
+                            {:
+                              try{
+                                Type type = declarations.getType();
+                                String backId;
+
+                                if(type.getTipoSubyacente() == TipoSubyacente.TS_STRING){
+                                  String value = declarations.getValue();
+                                  backId = backend.addStrVar(var_id, type.getSize(), value);
+                                }else{
+                                  backId = backend.addVar(var_id, type.getSize(), type.getTipoSubyacente(), false);
+                                }
+
+                                type.setBackendId(backId);
+
+                                symbolsTable.add(var_id, type);
+
+                                c3a_g.generateC3aInstr(
+                                  Code.copy,
+                                  declarations.getVarId(),
+                                  null,
+                                  backId
+                                );
+
+                                  RESULT = declarations;
+
+                              }catch(SymbolsTableError e){
+                                String from = var_idxleft.getLine() + ":" + var_idxleft.getColumn();
+                                String to = var_idxright.getLine() + ":" + var_idxright.getColumn();
+                                String message = e.getMessage() + " from "+from+" to "+to;
+                                throw new SemanticError(message);
+                              }
+                            :}
+                            | id:id_var CONSTANT:constant two_points id:type_id op_assig VALUE:value
+                            {:
+                              try {
+
+                                boolean isConst = constant != null ? constant.getIsConst() : false;
+
+                                Type type = symbolsTable.get(type_id);
+
+                                if(type == null || type.getTipo() != Tipo.dtype){
+                                  String from = type_idxleft.getLine() + ":" + type_idxleft.getColumn();
+                                  String to = type_idxright.getLine() + ":" + type_idxright.getColumn();
+                                  String message = "Invalid type" + " from "+from+" to "+to;
+                                  throw new SemanticError(message);
+                                }
+
+                                if(type.getTipoSubyacente() != TipoSubyacente.TS_BOOLEAN
+                                  && type.getTipoSubyacente() != TipoSubyacente.TS_NUMBER
+                                  && type.getTipoSubyacente() != TipoSubyacente.TS_STRING ){
+                                    String from = type_idxleft.getLine() + ":" + type_idxleft.getColumn();
+                                    String to = type_idxright.getLine() + ":" + type_idxright.getColumn();
+                                    String message = "Invalid subjacent type" + " from "+from+" to "+to;
+                                    throw new SemanticError(message);
+                                }
+
+                                //IF LITERALL (type = null) CHECK SUBJACENT Tipo
+                                if(value.getTipo() == Tipo.dnull && type.getTipoSubyacente() != value.getTipoSubyacente()){
+                                  String from = type_idxleft.getLine() + ":" + type_idxleft.getColumn();
+                                  String to = type_idxright.getLine() + ":" + type_idxright.getColumn();
+                                  String message = "Value and type must have same subjacent type" + " from "+from+" to "+to;
+                                  throw new SemanticError(message);
+                                }
+
+                                if(value.getTipo() != Tipo.dnull && !value.getTypeName().equals(type_id)){
+                                  String from = type_idxleft.getLine() + ":" + type_idxleft.getColumn();
+                                  String to = type_idxright.getLine() + ":" + type_idxright.getColumn();
+                                  String message = "Value and type must have same subjacent type" + " from "+from+" to "+to;
+                                  throw new SemanticError(message);
+                                }
+
+                                Type var_type;
+
+                                if(isConst){
+                                  var_type = new Type(Tipo.dconst, type_id, value.getValue());
+                                }
+                                else{
+                                  var_type = new Type(Tipo.dvar, type_id);
+                                }
+
+                                int size = type.getSize();
+                                if(value.getIsString()){
+                                  size = value.getStringSize();
+                                }
+
+                                String var_id;
+                                if(type.getTipoSubyacente() == TipoSubyacente.TS_STRING){
+                                  String str_value = (String) value.getValue();
+                                  var_id = backend.addStrVar(id_var, type.getSize(), str_value);
+                                }else{
+                                  var_id = backend.addVar(id_var, type.getSize(), type.getTipoSubyacente(), false);
+                                }
+
+                                var_type.setBackendId(var_id);
+
+                                String val_id = value.getVarId();
+                                symbolsTable.add(id_var, var_type);
+
+                                SymbolDeclarations symDcls;
+                                if(value.getIsString()){
+                                  symDcls = new SymbolDeclarations(val_id, var_type, (String) value.getValue());
+                                }else{
+                                  symDcls = new SymbolDeclarations(val_id, var_type);
+                                }
+
+                                if(type.getTipoSubyacente() != TipoSubyacente.TS_STRING){
+                                  c3a_g.generateC3aInstr(
+                                    Code.copy,
+                                    val_id,
+                                    null,
+                                    var_id
+                                  );
+                                }
+
+                                RESULT = symDcls;
+                              }catch(SymbolsTableError e){
+                                String from = id_varxleft.getLine() + ":" + id_varxleft.getColumn();
+                                String to = id_varxright.getLine() + ":" + id_varxright.getColumn();
+                                String message = e.getMessage() + " from "+from+" to "+to;
+                                throw new SemanticError(message);
+                              }
+                            :};
+
+CONSTANT                    ::=  constant
+                            {:
+                              RESULT = new SymbolConstant(true);
+                            :}
+                            |  EMPTY
+                            {:
+                              RESULT = new SymbolConstant(false);
+                            :};
+
+OPERATOR_ASSIG              ::= id:var_id op_assig VALUE:value
+                            {:
+                              try{
+                                Type varType = symbolsTable.get(var_id);
+                                String type_id = varType.getTypeName();
+
+                                if(varType.getTipo() == Tipo.dconst){
+                                  String from = var_idxleft.getLine() + ":" + var_idxleft.getColumn();
+                                  String to = valuexright.getLine() + ":" + valuexright.getColumn();
+                                  String message = "Cant assign value to constant" + " from "+from+" to "+to;
+                                  throw new SemanticError(message);
+                                }
+
+                                //IF LITERALL (type = null) CHECK SUBJACENT Tipo
+                                if(value.getTipo() == Tipo.dnull && varType.getTipoSubyacente() == value.getTipoSubyacente()){
+                                  String from = var_idxleft.getLine() + ":" + var_idxleft.getColumn();
+                                  String to = valuexright.getLine() + ":" + valuexright.getColumn();
+                                  String message = "Value and type must have same subjacent type" + " from "+from+" to "+to;
+                                  throw new SemanticError(message);
+                                }
+
+                                if(value.getTipo() != Tipo.dnull && value.getTypeName() != type_id){
+                                  String from = var_idxleft.getLine() + ":" + var_idxleft.getColumn();
+                                  String to = valuexright.getLine() + ":" + valuexright.getColumn();
+                                  String message = "Value and type must have same subjacent type" + " from "+from+" to "+to;
+                                  throw new SemanticError(message);
+                                }
+
+                                c3a_g.generateC3aInstr(
+                                  Code.copy,
+                                  value.getVarId(),
+                                  null,
+                                  varType.getBackendId()
+                                );
+
+                                RESULT = new SymbolOperatorAssignation();
+                              }catch(SymbolsTableError e){
+                                String from = var_idxleft.getLine() + ":" + var_idxleft.getColumn();
+                                String to = var_idxright.getLine() + ":" + var_idxright.getColumn();
+                                String message = e.getMessage() + " from "+from+" to "+to;
+                                throw new SemanticError(message);
+                              }
+                            :};
+
+ARITH_OP                    ::= op_arithmetical_b:op
+                            {: RESULT = new SymbolArithOperator(op); :}
+                            | op_arithmetical_c:op
+                            {: RESULT = new SymbolArithOperator(op); :};
+
+ARITHMETICAL_OPERATION      ::= ARITHMETICAL_VALUE:arith_val1 ARITH_OP:op ARITHMETICAL_VALUE:arith_val2
+                            {:
+                              try{
+                                SymbolArithOperation sym;
+                                boolean allConst = arith_val1.getIsConst() && arith_val2.getIsConst();
+
+                                Code op_code;
+
+                                switch(op.getOperator()){
+                                  case "+" :
+                                    op_code = Code.add;
+                                    break;
+                                  case "-" :
+                                    op_code = Code.sub;
+                                    break;
+                                  case "*" :
+                                    op_code = Code.prod;
+                                    break;
+                                  case "/" :
+                                    op_code = Code.div;
+                                    break;
+                                  case "%" :
+                                    op_code = Code.mod;
+                                    break;
+                                  default :
+                                    String from = opxleft.getLine() + ":" + opxleft.getColumn();
+                                    String to = opxright.getLine() + ":" + opxright.getColumn();
+                                    String message = "Invalid arithmetic operator from "+from+" to "+to;
+                                    throw new SemanticError(message);
+                                }
+
+                                Integer value = null;
+                                if(allConst) {
+                                  Integer val1 = (Integer) arith_val1.getValue();
+                                  Integer val2 = (Integer) arith_val2.getValue();
+
+                                  switch(op.getOperator()){
+                                    case "+" :
+                                      value = val1 + val2;
+                                      break;
+                                    case "-" :
+                                      value = val1 - val2;
+                                      break;
+                                    case "*" :
+                                      value = val1 * val2;
+                                      break;
+                                    case "/" :
+                                      if(val2 == 0){
+                                        String from = arith_val2xleft.getLine() + ":" + arith_val2xleft.getColumn();
+                                        String to = arith_val2xright.getLine() + ":" + arith_val2xright.getColumn();
+                                        String message = "Can not divide by zero (0)" + " from "+from+" to "+to;
+                                        throw new SemanticError(message);
+                                      }
+                                      value = val1 / val2;
+                                      break;
+                                    case "%" :
+                                      value = val1 % val2;
+                                      break;
+                                  }
+                                }
+
+                                Type type_number = symbolsTable.get("number");
+
+                                String var_id = backend.addTempVar(type_number.getSize(), type_number.getTipoSubyacente());
+
+                                c3a_g.generateC3aInstr(
+                                  op_code,
+                                  arith_val1.getVarId(),
+                                  arith_val2.getVarId(),
+                                  var_id
+                                );
+
+                                if(allConst){
+                                  sym = new SymbolArithOperation(var_id, value);
+                                }
+                                else{
+                                  sym = new SymbolArithOperation(var_id);
+                                }
+
+                                RESULT = sym;
+                              }catch(SymbolsTableError e){
+                                throw new SemanticError(e.getMessage());
+                              }
+                            :}
+                            | op_arithmetical_b:op lparen ARITHMETICAL_OPERATION:arith_op rparen
+                            {:
+                              try{
+                                SymbolArithOperation sym = arith_op;
+                                if(op.equals("-")){
+                                  Type type_number = symbolsTable.get("number");
+                                  String var_id = backend.addTempVar(type_number.getSize(),  type_number.getTipoSubyacente());
+
+                                  if(arith_op.getIsConst()){
+                                    Integer value = - arith_op.getValue().intValue();
+                                    sym = new SymbolArithOperation(arith_op.getVarId(), value);
+                                  }else{
+                                    sym = new SymbolArithOperation(var_id);
+                                  }
+
+                                  c3a_g.generateC3aInstr(
+                                    Code.neg,
+                                    arith_op.getVarId(),
+                                    null,
+                                    var_id
+                                  );
+                                }
+
+                                RESULT = sym;
+                              }catch(SymbolsTableError e){
+                                throw new SemanticError(e.getMessage());
+                              }
+                            :}
+                            | lparen ARITHMETICAL_OPERATION:arith_op rparen
+                            {:
+                              RESULT = arith_op;
+                            :};
+
+NUMBER_VALUE                ::= number:n_val
+                            {:
+                              Integer value = Integer.valueOf(n_val);
+                              RESULT = new SymbolNumberVal(value);
+                            :}
+                            | lparen NUMBER_VALUE:n_val rparen
+                            {:
+                              RESULT = n_val;
+                            :}
+                            | op_arithmetical_b:op NUMBER_VALUE:n_val
+                            {:
+                              SymbolNumberVal sym = n_val;
+                              if(op.equals("-")){
+                                Integer value = - n_val.getValue().intValue();
+                                sym = new SymbolNumberVal(value);
+                              }
+
+                              RESULT = sym;
+                            :};
+
+ARITHMETICAL_VALUE         ::= NUMBER_VALUE:n_val
+                          {:
+                            try{
+                              Integer value = n_val.getValue();
+
+                              Type type_number = symbolsTable.get("number");
+
+                              String var_id = backend.addTempVar(type_number.getSize(),  type_number.getTipoSubyacente());
+
+                              c3a_g.generateC3aInstr(
+                                Code.copy,
+                                Integer.toString(value),
+                                null,
+                                var_id
+                              );
+
+                              RESULT = new SymbolArithValue(var_id, value);
+                            }catch(SymbolsTableError e){
+                              throw new SemanticError(e.getMessage());
+                            }
+                          :}
+                          | ID_VALUE:id_val
+                          {:
+                            try{
+                              Tipo main_var_type = id_val.getTipo();
+
+                              if(main_var_type != Tipo.darg && main_var_type != Tipo.dconst && main_var_type != Tipo.dvar){
+                                String from = id_valxleft.getLine() + ":" + id_valxleft.getColumn();
+                                String to = id_valxright.getLine() + ":" + id_valxright.getColumn();
+                                String message = "Invalid arithmetic value type" + " from "+from+" to "+to;
+                                throw new SemanticError(message);
+                              }
+
+                              Type var_dtype = symbolsTable.get(id_val.getTypeName());
+
+                              if(var_dtype.getTipoSubyacente() != TipoSubyacente.TS_NUMBER){
+                                String from = id_valxleft.getLine() + ":" + id_valxleft.getColumn();
+                                String to = id_valxright.getLine() + ":" + id_valxright.getColumn();
+                                String message = "Invalid subjacent type" + " from "+from+" to "+to;
+                                throw new SemanticError(message);
+                              }
+
+                              SymbolArithValue sym;
+                              String var_id = id_val.getId();
+
+                              if(main_var_type == Tipo.dconst){
+                                Integer value = (Integer) id_val.getValue();
+                                sym = new SymbolArithValue(var_id, value);
+                              }else{
+                                sym = new SymbolArithValue(var_id);
+                              }
+
+                              RESULT = sym;
+                            }catch(SymbolsTableError e){
+                              throw new SemanticError(e.getMessage());
+                            }
+                          :}
+                          | ARITHMETICAL_OPERATION:arith_op
+                          {:
+                            SymbolArithValue sym;
+                            if(arith_op.getIsConst()){
+                              sym = new SymbolArithValue(arith_op.getVarId(), arith_op.getValue());
+                            }else{
+                              sym = new SymbolArithValue(arith_op.getVarId());
+                            }
+
+                            RESULT = sym;
+                          :}
+                          | CALL_FUNCTION:call_fn
+                          {:
+                            try{
+                              Type fn_type = symbolsTable.get(call_fn.getFunctionId());
+                              Type dfn_type = symbolsTable.get(fn_type.getTypeName());
+
+                              if(dfn_type.getTipoSubyacente() != TipoSubyacente.TS_NUMBER){
+                                String from = call_fnxleft.getLine() + ":" + call_fnxleft.getColumn();
+                                String to = call_fnxright.getLine() + ":" + call_fnxright.getColumn();
+                                String message = "Invalid function call "+call_fn.getFunctionId() + " with return type "+ dfn_type.getTipoSubyacente() +". Expected :"+TipoSubyacente.TS_NUMBER + " from "+from+" to "+to;
+                                throw new SemanticError(message);
+                              }
+
+                              String var_id = backend.addTempVar(dfn_type.getSize(), dfn_type.getTipoSubyacente());
+
+                              c3a_g.generateC3aInstr(
+                                Code.copy,
+                                "return",
+                                call_fn.getBackendId(),
+                                var_id
+                              );
+
+                              RESULT = new SymbolArithValue(var_id);
+                            }catch(SymbolsTableError e){
+                              String from = call_fnxleft.getLine() + ":" + call_fnxleft.getColumn();
+                              String to = call_fnxright.getLine() + ":" + call_fnxright.getColumn();
+                              String message = e.getMessage() + " from "+from+" to "+to;
+                              throw new SemanticError(message);
+                            }
+                          :}
+                          | op_arithmetical_b:op CALL_FUNCTION:call_fn
+                          {:
+                            try{
+                              Type fn_type = symbolsTable.get(call_fn.getFunctionId());
+                              Type dfn_type = symbolsTable.get(fn_type.getTypeName());
+
+                              if(dfn_type.getTipoSubyacente() != TipoSubyacente.TS_NUMBER){
+                                String from = call_fnxleft.getLine() + ":" + call_fnxleft.getColumn();
+                                String to = call_fnxright.getLine() + ":" + call_fnxright.getColumn();
+                                String message = "Invalid function call "+call_fn.getFunctionId() + " with return type "+ dfn_type.getTipoSubyacente() +". Expected :"+TipoSubyacente.TS_NUMBER + " from "+from+" to "+to;
+                                throw new SemanticError(message);
+                              }
+
+                              String var_id = backend.addTempVar(dfn_type.getSize(), dfn_type.getTipoSubyacente());
+
+                              c3a_g.generateC3aInstr(
+                                Code.copy,
+                                "return",
+                                call_fn.getBackendId(),
+                                var_id
+                              );
+
+                              if(op.equals("-")){
+                                c3a_g.generateC3aInstr(
+                                  Code.neg,
+                                  var_id,
+                                  null,
+                                  var_id
+                                );
+                              }
+
+                              RESULT = new SymbolArithValue(var_id);
+                            }catch(SymbolsTableError e){
+                              String from = call_fnxleft.getLine() + ":" + call_fnxleft.getColumn();
+                              String to = call_fnxright.getLine() + ":" + call_fnxright.getColumn();
+                              String message = e.getMessage() + " from "+from+" to "+to;
+                              throw new SemanticError(message);
+                            }
+                          :};
+
+ID_VALUE                    ::= id:id_val
+                            {:
+                              try{
+                                Type id_type = symbolsTable.get(id_val);
+                                String var_id = id_type.getBackendId();
+                                SymbolIdVal sym = new SymbolIdVal(var_id, id_type.getTipo(), id_type.getTypeName());
+                                if(id_type.getTipo() == Tipo.dconst){
+                                  sym = new SymbolIdVal(var_id, id_type.getTipo(), id_type.getTypeName(), id_type.getValue());
+                                }
+
+                                RESULT = sym;
+                              }catch(SymbolsTableError e){
+                                String from = id_valxleft.getLine() + ":" + id_valxleft.getColumn();
+                                String to = id_valxright.getLine() + ":" + id_valxright.getColumn();
+                                String message = e.getMessage() + " from "+from+" to "+to;
+                                throw new SemanticError(message);
+                              }
+                            :}
+                            | lparen ID_VALUE:id_val rparen
+                            {:
+                              RESULT = id_val;
+                            :}
+                            | op_logical_not:op ID_VALUE:id_val
+                            {:
+                              try{
+
+                                SymbolIdVal sym;
+                                // check if unary operator is type valid
+                                TipoSubyacente subType = symbolsTable.get(id_val.getTypeName()).getTipoSubyacente();
+
+                                if(subType != TipoSubyacente.TS_BOOLEAN) {
+                                  String from = opxleft.getLine() + ":" + opxleft.getColumn();
+                                  String to = opxright.getLine() + ":" + opxright.getColumn();
+                                  String message = "Invalid unary operator " + op + " for type " + subType + " from "+from+" to "+to;
+                                  throw new SemanticError(message);
+                                }
+
+                                Type type_boolean = symbolsTable.get("boolean");
+                                String var_id = backend.addTempVar(type_boolean.getSize(),  type_boolean.getTipoSubyacente());
+
+                                c3a_g.generateC3aInstr(
+                                  Code.not,
+                                  id_val.getId(),
+                                  null,
+                                  var_id
+                                );
+
+                                if(id_val.getTipo() == Tipo.dconst){
+                                  Boolean value = !((Boolean) id_val.getValue()).booleanValue();
+                                  sym = new SymbolIdVal(var_id, id_val.getTipo(), id_val.getTypeName(), value);
+                                }else{
+                                  sym = new SymbolIdVal(var_id, id_val.getTipo(), id_val.getTypeName());
+                                }
+
+                                RESULT = sym;
+                              }catch(SymbolsTableError e){
+                                throw new SemanticError(e.getMessage());
+                              }
+                            :}
+                            | op_arithmetical_b:op ID_VALUE:id_val
+                            {:
+                              try {
+                                SymbolIdVal sym = id_val;
+                                // check if unary operator is type valid
+                                TipoSubyacente subType = symbolsTable.get(id_val.getTypeName()).getTipoSubyacente();
+
+                                if(subType != TipoSubyacente.TS_BOOLEAN) {
+                                  String from = opxleft.getLine() + ":" + opxleft.getColumn();
+                                  String to = opxright.getLine() + ":" + opxright.getColumn();
+                                  String message = "Invalid unary operator " + op + " for type " + subType + " from "+from+" to "+to;
+                                  throw new SemanticError(message);
+                                }
+
+                                if(op.equals("-")){
+                                  Type type_number = symbolsTable.get("number");
+                                  String var_id = backend.addTempVar(type_number.getSize(),  type_number.getTipoSubyacente());
+
+                                  c3a_g.generateC3aInstr(
+                                    Code.neg,
+                                    id_val.getId(),
+                                    null,
+                                    var_id
+                                  );
+
+                                  if(id_val.getTipo() == Tipo.dconst){
+                                    Integer value = -((Integer) id_val.getValue()).intValue();
+                                    sym = new SymbolIdVal(var_id, id_val.getTipo(), id_val.getTypeName(), value);
+                                  }else{
+                                    sym = new SymbolIdVal(var_id, id_val.getTipo(), id_val.getTypeName());
+                                  }
+                                }
+
+                                RESULT = sym;
+                              }catch(SymbolsTableError e){
+                                throw new SemanticError(e.getMessage());
+                              }
+                            :};
+
+STRING_VALUE                ::= string:string_val
+                            {:
+                              RESULT = new SymbolStringVal(string_val);
+                            :}
+                            | lparen STRING_VALUE:string_val rparen
+                            {:
+                              RESULT = string_val;
+                            :};
+
+VALUE                       ::= ID_VALUE:id_val
+                            {:
+                              SymbolValue sym;
+
+                              String var_id = id_val.getId();
+
+                              if(id_val.getTipo() == Tipo.dconst){
+                                sym = new SymbolValue(var_id, id_val.getTipo(), id_val.getTypeName(), id_val.getValue());
+                              }
+                              else {
+                                sym = new SymbolValue(var_id, id_val.getTipo(), id_val.getTypeName());
+                              }
+
+                              RESULT = sym;
+                            :}
+                            | STRING_VALUE:str_value
+                            {:
+                              try{
+                                String value = str_value.getString().replace("\"", "");
+                                Type type_string = symbolsTable.get("string");
+
+                                if (value.length() > 1000){
+                                  String from = str_valuexleft.getLine() + ":" + str_valuexleft.getColumn();
+                                  String to = str_valuexright.getLine() + ":" + str_valuexright.getColumn();
+                                  String message = "String must be shorter than 1000 characters " + " from "+from+" to "+to;
+                                  throw new SemanticError(message);
+                                }
+
+                                // string size in bytes
+                                int stringSize = value.length() * type_string.getSize();
+
+                                SymbolValue sym = new SymbolValue(value, stringSize);
+
+                                RESULT = sym;
+                              }catch(SymbolsTableError e){
+                                throw new SemanticError(e.getMessage());
+                              }
+                            :}
+                            | BOOLEAN_VALUE:bool_val
+                            {:
+                              try{
+                                Boolean value = bool_val.getValue();
+                                Type type_bool = symbolsTable.get("boolean");
+
+                                String var_id = backend.addTempVar(type_bool.getSize(), type_bool.getTipoSubyacente());
+
+                                c3a_g.generateC3aInstr(
+                                  Code.copy,
+                                  value.toString(),
+                                  null,
+                                  var_id
+                                );
+
+                                RESULT = new SymbolValue(var_id, TipoSubyacente.TS_BOOLEAN, value);
+                              }catch(SymbolsTableError e){
+                                throw new SemanticError(e.getMessage());
+                              }
+                            :}
+                            | NUMBER_VALUE:n_val
+                            {:
+                              try{
+                                Integer value = n_val.getValue();
+
+                                Type type_number = symbolsTable.get("number");
+
+                                String var_id = backend.addTempVar(type_number.getSize(), type_number.getTipoSubyacente());
+
+                                c3a_g.generateC3aInstr(
+                                  Code.copy,
+                                  Integer.toString(value),
+                                  null,
+                                  var_id
+                                );
+
+                                RESULT = new SymbolValue(var_id, TipoSubyacente.TS_NUMBER, value);
+                              }catch(SymbolsTableError e){
+                                throw new SemanticError(e.getMessage());
+                              }
+                            :}
+                            | VALUE_COMPARISON:comp_val
+                            {:
+                              SymbolValue sym;
+                              String id = comp_val.getVarId();
+
+                              if(comp_val.getIsConst()){
+                                Boolean value = comp_val.getValue();
+                                sym = new SymbolValue(id, TipoSubyacente.TS_BOOLEAN, value);
+                              }else{
+                                sym = new SymbolValue(id, TipoSubyacente.TS_BOOLEAN);
+                              }
+
+                              RESULT = sym;
+                            :}
+                            | op_logical_not VALUE_COMPARISON:comp_val
+                            {:
+                              try{
+                                SymbolValue sym;
+
+                                Type type_bool = symbolsTable.get("boolean");
+                                String var_id = backend.addTempVar(type_bool.getSize(), type_bool.getTipoSubyacente());
+
+                                c3a_g.generateC3aInstr(
+                                  Code.not,
+                                  comp_val.getVarId(),
+                                  null,
+                                  var_id
+                                );
+
+                                if(comp_val.getIsConst()){
+                                  Boolean value = ! comp_val.getValue().booleanValue();
+                                  sym = new SymbolValue(var_id, TipoSubyacente.TS_BOOLEAN, value);
+                                }else{
+                                  sym = new SymbolValue(var_id, TipoSubyacente.TS_BOOLEAN);
+                                }
+
+                                RESULT = sym;
+                              }catch(SymbolsTableError e){
+                                throw new SemanticError(e.getMessage());
+                              }
+                            :}
+                            | ARITHMETICAL_OPERATION:arith_op
+                            {:
+                              SymbolValue sym;
+                              String var_id = arith_op.getVarId();
+                              if(arith_op.getIsConst()){
+                                sym = new SymbolValue(var_id, TipoSubyacente.TS_NUMBER, arith_op.getValue());
+                              }else{
+                                sym = new SymbolValue(var_id, TipoSubyacente.TS_NUMBER);
+                              }
+
+                              RESULT = sym;
+                            :}
+                            | BOOLEAN_OPERATION:bool_op
+                            {:
+                              SymbolValue sym;
+                              String var_id = new String(bool_op.getVarId());
+                              if(bool_op.getIsConst()){
+                                sym = new SymbolValue(var_id, TipoSubyacente.TS_BOOLEAN, bool_op.getValue());
+                              }else{
+                                sym = new SymbolValue(var_id, TipoSubyacente.TS_BOOLEAN);
+                              }
+
+                              RESULT = sym;
+                            :}
+                            | CALL_FUNCTION:call_fn
+                            {:
+                              try{
+                                Type fn_type = symbolsTable.get(call_fn.getFunctionId());
+                                Type dfn_type = symbolsTable.get(fn_type.getTypeName());
+
+                                if(dfn_type.getTipoSubyacente() == TipoSubyacente.TS_NULL){
+                                  String from = call_fnxleft.getLine() + ":" +call_fnxleft.getColumn();
+                                  String to = call_fnxright.getLine() + ":" + call_fnxright.getColumn();
+                                  String message = "Function call : "+call_fn.getFunctionId() + " does not return any value" + " from "+from+" to "+to;
+                                  throw new SemanticError(message);
+                                }
+
+                                String var_id = backend.addTempVar(dfn_type.getSize(), dfn_type.getTipoSubyacente());
+
+                                c3a_g.generateC3aInstr(
+                                  Code.copy,
+                                  "return",
+                                  call_fn.getBackendId(),
+                                  var_id
+                                );
+
+                                RESULT = new SymbolValue(var_id, Tipo.dfun, fn_type.getTypeName());
+                              }catch(SymbolsTableError e){
+                                throw new SemanticError(e.getMessage());
+                              }
+                            :}
+                            | instr_read lparen rparen
+                            {:
+                              try{
+                                Type number_type = symbolsTable.get("number");
+                                String var_id = backend.addTempVar(number_type.getSize(), number_type.getTipoSubyacente());
+
+                                c3a_g.generateC3aInstr(
+                                  Code.input,
+                                  null,
+                                  null,
+                                  var_id
+                                );
+
+                                RESULT = new SymbolValue(var_id, number_type.getTipoSubyacente());
+                              }catch(SymbolsTableError e){
+                                throw new SemanticError(e.getMessage());
+                              }
+                            :};
+
+BOOLEAN_OPERATION           ::= BOOLEAN_OP_VALUE:bool_val1 op_logical:op BOOLEAN_OP_VALUE:bool_val2
+                            {:
+                              try{
+                                SymbolBoolOp sym;
+                                Code op_code;
+
+                                switch(op){
+                                  case "&&":
+                                    op_code = Code.and;
+                                    break;
+                                  case "||":
+                                    op_code = Code.or;
+                                    break;
+                                  default :
+                                    String from = opxleft.getLine() + ":" + opxleft.getColumn();
+                                    String to = opxright.getLine() + ":" + opxright.getColumn();
+                                    String message = "Invalid boolean operator" + " from "+from+" to "+to;
+                                    throw new SemanticError(message);
+                                }
+
+                                boolean allConst = bool_val1.getIsConst() && bool_val2.getIsConst();
+                                Boolean value = null;
+
+                                if(allConst){
+                                  Boolean val1 = (Boolean) bool_val1.getValue();
+                                  Boolean val2 = (Boolean) bool_val2.getValue();
+                                  switch(op){
+                                  case "&&":
+                                    value = val1 && val2;
+                                    break;
+                                  case "||":
+                                    value = val1 || val2;
+                                    break;
+                                  }
+                                }
+
+                                Type type_bool = symbolsTable.get("boolean");
+                                String var_id = backend.addTempVar(type_bool.getSize(), type_bool.getTipoSubyacente());
+
+                                String val1_id = bool_val1.getVarId();
+                                String val2_id = bool_val2.getVarId();
+                                c3a_g.generateC3aInstr(
+                                  op_code,
+                                  val1_id,
+                                  val2_id,
+                                  var_id
+                                );
+
+                                if(allConst){
+                                  sym = new SymbolBoolOp(var_id, value);
+                                }else{
+                                  sym = new SymbolBoolOp(var_id);
+                                }
+
+                                RESULT = sym;
+                              }catch(SymbolsTableError e){
+                                throw new SemanticError(e.getMessage());
+                              }
+                            :}
+                            | lparen BOOLEAN_OPERATION:bool_op rparen
+                            {:
+                              RESULT = bool_op;
+                            :}
+                            | op_logical_not lparen BOOLEAN_OPERATION:bool_op rparen
+                            {:
+                              try{
+                                SymbolBoolOp sym;
+                                Type type_boolean = symbolsTable.get("boolean");
+                                String var_id = backend.addTempVar(type_boolean.getSize(),  type_boolean.getTipoSubyacente());
+
+                                c3a_g.generateC3aInstr(
+                                  Code.neg,
+                                  bool_op.getVarId(),
+                                  null,
+                                  var_id
+                                );
+
+                                if(bool_op.getIsConst()){
+                                  Boolean value = ! bool_op.getValue().booleanValue();
+                                  sym = new SymbolBoolOp(bool_op.getVarId(), value);
+                                }else{
+                                  sym = new SymbolBoolOp(var_id);
+                                }
+
+                                RESULT = sym;
+                              }catch(SymbolsTableError e){
+                                throw new SemanticError(e.getMessage());
+                              }
+                            :};
+
+BOOLEAN_OP_VALUE            ::= BOOLEAN_VALUE:bool_val
+                            {:
+                              try{
+                                Boolean value = bool_val.getValue();
+                                Type type_boolean = symbolsTable.get("boolean");
+
+                                String var_id = backend.addTempVar(type_boolean.getSize(),  type_boolean.getTipoSubyacente());
+
+                                c3a_g.generateC3aInstr(
+                                  Code.copy,
+                                  value.toString(),
+                                  null,
+                                  var_id
+                                );
+
+                                RESULT = new SymbolBoolOpValue(var_id, value);
+                              }catch(SymbolsTableError e){
+                                throw new SemanticError(e.getMessage());
+                              }
+                            :}
+                            | ID_VALUE:id_val
+                            {:
+                              try{
+                                Tipo main_var_type = id_val.getTipo();
+                                if(main_var_type != Tipo.darg && main_var_type != Tipo.dconst && main_var_type != Tipo.dvar){
+                                  String from = id_valxleft.getLine() + ":" + id_valxleft.getColumn();
+                                  String to = id_valxright.getLine() + ":" + id_valxright.getColumn();
+                                  String message = "Invalid arithmetic value type" + " from "+from+" to "+to;
+                                  throw new SemanticError(message);
+                                }
+
+                                Type var_dtype = symbolsTable.get(id_val.getTypeName());
+
+                                if(var_dtype.getTipoSubyacente() != TipoSubyacente.TS_BOOLEAN){
+                                  String from = id_valxleft.getLine() + ":" + id_valxleft.getColumn();
+                                  String to = id_valxright.getLine() + ":" + id_valxright.getColumn();
+                                  String message = "Invalid subjacent type" + " from "+from+" to "+to;
+                                  throw new SemanticError(message);
+                                }
+
+                                SymbolBoolOpValue sym;
+                                String var_id = id_val.getId();
+
+                                if(main_var_type == Tipo.dconst){
+                                  Boolean value = (Boolean) id_val.getValue();
+                                  sym = new SymbolBoolOpValue(var_id, value);
+                                }else{
+                                  sym = new SymbolBoolOpValue(var_id);
+                                }
+
+                                RESULT = sym;
+                              }catch(SymbolsTableError e){
+                                throw new SemanticError(e.getMessage());
+                              }
+                            :}
+                            | BOOLEAN_OPERATION:bool_op
+                            {:
+                              SymbolBoolOpValue sym;
+                              if(bool_op.getIsConst()){
+                                sym = new SymbolBoolOpValue(bool_op.getVarId(), bool_op.getValue());
+                              }else{
+                                sym = new SymbolBoolOpValue(bool_op.getVarId());
+                              }
+                              RESULT = sym;
+                            :}
+                            | VALUE_COMPARISON:comp_val
+                            {:
+                              SymbolBoolOpValue sym;
+                              String id = new String(comp_val.getVarId());
+                              if(comp_val.getIsConst()){
+                                sym = new SymbolBoolOpValue(id, comp_val.getValue());
+                              }else{
+                                sym = new SymbolBoolOpValue(id);
+                              }
+
+                              RESULT = sym;
+                            :}
+                            | op_logical_not VALUE_COMPARISON:comp_val
+                            {:
+                              try{
+                                Type type_bool = symbolsTable.get("boolean");
+                                String var_id = backend.addTempVar(type_bool.getSize(), type_bool.getTipoSubyacente());
+
+                                c3a_g.generateC3aInstr(
+                                  Code.not,
+                                  comp_val.getVarId(),
+                                  null,
+                                  var_id
+                                );
+
+                                SymbolBoolOpValue sym;
+                                if(comp_val.getIsConst()){
+                                  Boolean value = ! comp_val.getValue().booleanValue();
+                                  sym = new SymbolBoolOpValue(var_id, value);
+                                }else{
+                                  sym = new SymbolBoolOpValue(var_id);
+                                }
+                                RESULT = sym;
+                              }catch(SymbolsTableError e){
+                                throw new SemanticError(e.getMessage());
+                              }
+                            :}
+                            | CALL_FUNCTION:call_fn
+                            {:
+                              try{
+                                Type fn_type = symbolsTable.get(call_fn.getFunctionId());
+                                Type dfn_type = symbolsTable.get(fn_type.getTypeName());
+
+                                if(dfn_type.getTipoSubyacente() != TipoSubyacente.TS_BOOLEAN){
+                                  String from = call_fnxleft.getLine() + ":" + call_fnxleft.getColumn();
+                                  String to = call_fnxright.getLine() + ":" + call_fnxright.getColumn();
+                                  String message = "Invalid function call "+call_fn.getFunctionId() + " with return type "+ dfn_type.getTipoSubyacente() +". Expected :"+TipoSubyacente.TS_BOOLEAN + " from "+from+" to "+to;
+                                  throw new SemanticError(message);
+                                }
+
+                                String var_id = backend.addTempVar(dfn_type.getSize(), dfn_type.getTipoSubyacente());
+
+                                c3a_g.generateC3aInstr(
+                                  Code.copy,
+                                  "return",
+                                  call_fn.getBackendId(),
+                                  var_id
+                                );
+
+                                RESULT = new SymbolBoolOpValue(var_id);
+                              }catch(SymbolsTableError e){
+                                throw new SemanticError(e.getMessage());
+                              }
+                            :}
+                            | op_logical_not:op CALL_FUNCTION:call_fn
+                            {:
+                              try{
+                                Type fn_type = symbolsTable.get(call_fn.getFunctionId());
+                                Type dfn_type = symbolsTable.get(fn_type.getTypeName());
+
+                                if(dfn_type.getTipoSubyacente() != TipoSubyacente.TS_NUMBER){
+                                  String from = call_fnxleft.getLine() + ":" + call_fnxleft.getColumn();
+                                  String to = call_fnxright.getLine() + ":" + call_fnxright.getColumn();
+                                  String message = "Invalid function call "+call_fn.getFunctionId() + " with return type "+ dfn_type.getTipoSubyacente() +". Expected :"+TipoSubyacente.TS_NUMBER + " from "+from+" to "+to;
+                                  throw new SemanticError(message);
+                                }
+
+                                String var_id = backend.addTempVar(dfn_type.getSize(), dfn_type.getTipoSubyacente());
+
+                                c3a_g.generateC3aInstr(
+                                  Code.copy,
+                                  "return",
+                                  call_fn.getBackendId(),
+                                  var_id
+                                );
+
+                                c3a_g.generateC3aInstr(
+                                  Code.neg,
+                                  var_id,
+                                  null,
+                                  var_id
+                                );
+
+                                RESULT = new SymbolBoolOpValue(var_id);
+                              }catch(SymbolsTableError e){
+                                throw new SemanticError(e.getMessage());
+                              }
+                            :}
+                            ;
+
+BOOLEAN_VALUE               ::= bool:bool_val
+                            {:
+                              Boolean value = Boolean.valueOf(bool_val);
+                              RESULT = new SymbolBoolVal(value);
+                            :}
+                            | op_logical_not BOOLEAN_VALUE:bool_val
+                            {:
+                              Boolean value = ! bool_val.getValue().booleanValue();
+                              RESULT = new SymbolBoolVal(value);
+                            :}
+                            | lparen BOOLEAN_VALUE:bool_val rparen
+                            {:
+                              RESULT = bool_val;
+                            :}
+                            ;
+
+VALUE_COMPARISON            ::= lparen VALUE:val1 op_relational:op VALUE:val2 rparen
+                            {:
+                              try{
+                                SymbolValueComparison sym;
+
+                                Tipo type1 = val1.getTipo();
+                                TipoSubyacente subType1;
+
+                                if(val1.getTipo() == Tipo.dnull){
+                                  subType1 = val1.getTipoSubyacente();
+                                }else{
+                                  if(type1 != Tipo.dvar && type1 != Tipo.dconst && type1 != Tipo.darg && type1 != Tipo.dfun) {
+                                    String from = val1xleft.getLine() + ":" + val1xleft.getColumn();
+                                    String to = val1xright.getLine() + ":" + val1xright.getColumn();
+                                    String message = "Value 1 of comparison wrong type" + " from "+from+" to "+to;
+                                    throw new SemanticError(message);
+                                  }
+                                  Type dtype_type = symbolsTable.get(val1.getTypeName());
+                                  subType1 = dtype_type.getTipoSubyacente();
+                                }
+                                // SAME FOR VALUE2
+                                Tipo type2 = val2.getTipo();
+                                TipoSubyacente subType2;
+
+                                if(val2.getTipo() == Tipo.dnull){
+                                  subType2 = val2.getTipoSubyacente();
+                                }else{
+                                  if(type2 != Tipo.dvar && type2 != Tipo.dconst && type2 != Tipo.darg && type2 != Tipo.dfun) {
+                                    String from = val2xleft.getLine() + ":" + val2xleft.getColumn();
+                                    String to = val2xright.getLine() + ":" + val2xright.getColumn();
+                                    String message = "Value 2 of comparison wrong type" + " from "+from+" to "+to;
+                                    throw new SemanticError(message);
+                                  }
+                                  Type dtype_type = symbolsTable.get(val2.getTypeName());
+                                  subType2 = dtype_type.getTipoSubyacente();
+                                }
+
+                                //Check same subtype
+                                if(subType1 != subType2) {
+                                  String from = val2xleft.getLine() + ":" + val2xleft.getColumn();
+                                  String to = val2xright.getLine() + ":" + val2xright.getColumn();
+                                  String message = "Value 1 subtype is different from value 2" + " from "+from+" to "+to;
+                                  throw new SemanticError(message);
+                                }
+
+                                Code op_code = Code.EQ;
+                                switch(op){
+                                  case "==":
+                                    op_code = Code.EQ;
+                                    break;
+                                  case "!=":
+                                    op_code = Code.NE;
+                                    break;
+                                  case "<":
+                                    if(subType1 != TipoSubyacente.TS_NUMBER) {
+                                      String from = opxleft.getLine() + ":" + opxleft.getColumn();
+                                      String to = opxright.getLine() + ":" + opxright.getColumn();
+                                      String message = "This operator ("+op+") only works with integer subtypes" + " from "+from+" to "+to;
+                                      throw new SemanticError(message);
+                                    }
+                                    op_code = Code.LT;
+                                    break;
+                                  case "<=":
+                                    if(subType1 != TipoSubyacente.TS_NUMBER) {
+                                      String from = opxleft.getLine() + ":" + opxleft.getColumn();
+                                      String to = opxright.getLine() + ":" + opxright.getColumn();
+                                      String message = "This operator ("+op+") only works with integer subtypes" + " from "+from+" to "+to;
+                                      throw new SemanticError(message);
+                                    }
+                                    op_code = Code.LE;
+                                    break;
+                                  case ">":
+                                    if(subType1 != TipoSubyacente.TS_NUMBER) {
+                                      String from = opxleft.getLine() + ":" + opxleft.getColumn();
+                                      String to = opxright.getLine() + ":" + opxright.getColumn();
+                                      String message = "This operator ("+op+") only works with integer subtypes" + " from "+from+" to "+to;
+                                      throw new SemanticError(message);
+                                    }
+                                    op_code = Code.GT;
+                                    break;
+                                  case ">=":
+                                    if(subType1 != TipoSubyacente.TS_NUMBER) {
+                                      String from = opxleft.getLine() + ":" + opxleft.getColumn();
+                                      String to = opxright.getLine() + ":" + opxright.getColumn();
+                                      String message = "This operator ("+op+") only works with integer subtypes" + " from "+from+" to "+to;
+                                      throw new SemanticError(message);
+                                    }
+                                    op_code = Code.GE;
+                                    break;
+                                }
+
+                                boolean allConst = val1.getIsConst() && val2.getIsConst();
+
+                                Boolean val = null;
+                                if(allConst){
+                                  switch(op){
+                                    case "==":
+                                      if(subType1 == TipoSubyacente.TS_NUMBER){
+                                        val = (Integer) val1.getValue() == (Integer) val2.getValue();
+                                      }
+                                      if(subType1 == TipoSubyacente.TS_STRING){
+                                        val = ((String)val1.getValue()).equals((String) val2.getValue());
+                                      }
+                                      if(subType1 == TipoSubyacente.TS_BOOLEAN){
+                                        val = (Boolean) val1.getValue() == (Boolean) val2.getValue();
+                                      }
+                                      break;
+                                    case "!=":
+                                      if(subType1 == TipoSubyacente.TS_NUMBER){
+                                        val = (Integer) val1.getValue() != (Integer) val2.getValue();
+                                      }
+                                      if(subType1 == TipoSubyacente.TS_STRING){
+                                        val = !((String)val1.getValue()).equals((String) val2.getValue());
+                                      }
+                                      if(subType1 == TipoSubyacente.TS_BOOLEAN){
+                                        val = (Boolean) val1.getValue() != (Boolean) val2.getValue();
+                                      }
+                                      break;
+
+                                    // only integer operators
+                                    case "<":
+                                      val = (Integer) val1.getValue() < (Integer) val2.getValue();
+                                      break;
+                                    case "<=":
+                                      val = (Integer) val1.getValue() <= (Integer) val2.getValue();
+                                      break;
+                                    case ">":
+                                      val = (Integer) val1.getValue() > (Integer) val2.getValue();
+                                      break;
+                                    case ">=":
+                                      val = (Integer) val1.getValue() >= (Integer) val2.getValue();
+                                      break;
+                                  }
+                                }
+
+                                Type type_bool = symbolsTable.get("boolean");
+                                String var_id = backend.addTempVar(type_bool.getSize(), type_bool.getTipoSubyacente());
+
+                                if(allConst){
+                                  sym = new SymbolValueComparison(var_id, val);
+                                }else{
+                                  sym = new SymbolValueComparison(var_id);
+                                }
+
+                                c3a_g.generateC3aInstr(
+                                  op_code,
+                                  val1.getVarId(),
+                                  val2.getVarId(),
+                                  var_id
+                                );
+
+                                RESULT = sym;
+                              }catch(SymbolsTableError e){
+                                throw new SemanticError(e.getMessage());
+                              }
+                            :}
+                            | lparen VALUE_COMPARISON:cmp_val rparen
+                            {:
+                              RESULT = cmp_val;
+                            :};
+
+COND                        ::= lparen BOOLEAN_OP_VALUE:bool_val rparen
+                              {:
+                                String var_id = bool_val.getVarId();
+
+                                String true_label = backend.addLabel();
+                                String false_label = backend.addLabel();
+
+                                labelTrueStack.push(true_label);
+                                labelFalseStack.push(false_label);
+
+
+                                c3a_g.generateC3aInstr(
+                                  Code.jump_cond,
+                                  var_id,
+                                  "true",
+                                  true_label
+                                );
+
+                                c3a_g.generateC3aInstr(
+                                  Code.go_to,
+                                  null,
+                                  null,
+                                  false_label
+                                );
+
+                                RESULT = new SymbolCondition();
+                              :};
+
+COND_T                      ::=
+                              {:
+                                String label = labelTrueStack.pop();
+
+                                c3a_g.generateC3aInstr(
+                                  Code.skip,
+                                  null,
+                                  null,
+                                  label
+                                );
+
+                                RESULT = new SymbolConditionTrue();
+                              :};
+
+COND_F                      ::=
+                              {:
+                                String label = labelFalseStack.pop();
+
+                                c3a_g.generateC3aInstr(
+                                  Code.skip,
+                                  null,
+                                  null,
+                                  label
+                                );
+
+                                RESULT = new SymbolConditionFalse();
+                              :};
+
+INSTRUCTION_IF              ::= inst_if COND lbracket BLOCK_IN COND_T INSTRUCTIONS BLOCK_OUT rbracket ELIF ELSE
+                            {:
+                              RESULT = new SymbolInstructionIf();
+                            :};
+
+M_END                       ::= EMPTY
+                            {:
+                              String label = backend.addLabel();
+
+                              c3a_g.generateC3aInstr(
+                                Code.go_to,
+                                null,
+                                null,
+                                label
+                              );
+
+                              RESULT = new SymbolMEnd(label);
+                            :};
+
+ELIF                        ::= M_END:mend inst_elif COND_F COND lbracket BLOCK_IN COND_T INSTRUCTIONS BLOCK_OUT rbracket ELIF
+                            {:
+                              String label = mend.getLabel();
+
+                              c3a_g.generateC3aInstr(
+                                Code.skip,
+                                null,
+                                null,
+                                label
+                              );
+
+                              RESULT = new SymbolElif();
+                            :}
+                            |
+                            {:
+                              RESULT = new SymbolElif();
+                            :};
+
+ELSE                        ::= M_END:mend inst_else lbracket BLOCK_IN COND_F INSTRUCTIONS BLOCK_OUT rbracket
+                            {:
+                              String label = mend.getLabel();
+
+                              c3a_g.generateC3aInstr(
+                                Code.skip,
+                                null,
+                                null,
+                                label
+                              );
+
+                              RESULT = new SymbolElse();
+                            :}
+                            | COND_F
+                            {:
+                              RESULT = new SymbolElse();
+                            :};
+
+M_WHILE                     ::= EMPTY
+                            {:
+                              String label = backend.addLabel();
+
+                              c3a_g.generateC3aInstr(
+                                Code.skip,
+                                null,
+                                null,
+                                label
+                              );
+
+                              RESULT = new SymbolMWhile(label);
+                            :};
+
+INSTRUCTION_WHILE           ::= inst_while M_WHILE:mwhile COND lbracket BLOCK_IN COND_T INSTRUCTIONS BLOCK_OUT rbracket
+                            {:
+                              String loop_label = mwhile.getLabel();
+                              c3a_g.generateC3aInstr(
+                                Code.go_to,
+                                null,
+                                null,
+                                loop_label
+                              );
+
+                              String end_label = labelFalseStack.pop();
+                              c3a_g.generateC3aInstr(
+                                Code.skip,
+                                null,
+                                null,
+                                end_label
+                              );
+
+                              RESULT = new SymbolInstructionWhile();
+                            :};
+
+CALL_FUNCTION               ::= id:fun_id lparen:lp rparen:rp
+                            {:
+                              try{
+                                // Check if function and has params
+                                int num_params = symbolsTable.getNumParams(fun_id);
+                                if(num_params > 0 ){
+                                  String from = lpxleft.getLine() + ":" + lpxleft.getColumn();
+                                  String to = rpxright.getLine() + ":" + rpxright.getColumn();
+                                  String message = "Missing parameters. Function " + fun_id + " has " + num_params + " parameters" + " from "+from+" to "+to;
+                                  throw new SemanticError(message);
+                                }
+
+                                Type fun_type = symbolsTable.get(fun_id);
+                                String backId = fun_type.getBackendId();
+                                c3a_g.generateC3aInstr(
+                                  Code.call,
+                                  0 + "",
+                                  null,
+                                  backId
+                                );
+
+                                RESULT = new SymbolCallFunction(fun_id, backId);
+                              }catch(SymbolsTableError e){
+                                String from = fun_idxleft.getLine() + ":" + fun_idxleft.getColumn();
+                                String to = fun_idxright.getLine() + ":" + fun_idxright.getColumn();
+                                String message = e.getMessage() + " from "+from+" to "+to;
+                                throw new SemanticError(message);
+                              }
+                            :}
+                            | CALL_BODY:body rparen:rp
+                            {:
+                              try{
+                                int body_params = body.getNumParams();
+                                String fun_id = body.getFunId();
+                                int fun_params = symbolsTable.getNumParams(fun_id);
+
+                                if(fun_params != body_params){
+                                  String from = bodyxleft.getLine() + ":" + bodyxleft.getColumn();
+                                  String to = rpxright.getLine() + ":" + rpxright.getColumn();
+                                  String message = "Missing parameters. Function " + fun_id + " has " + fun_params + " parameters" + " from "+from+" to "+to;
+                                  throw new SemanticError(message);
+                                }
+
+                                String fun_backId = body.getFunBackId();
+                                c3a_g.generateC3aInstr(
+                                  Code.call,
+                                  fun_params + "",
+                                  null,
+                                  fun_backId
+                                );
+
+
+
+                                RESULT = new SymbolCallFunction(fun_id, fun_backId);
+                              }catch(SymbolsTableError e){
+                                throw new SemanticError(e.getMessage());
+                              }
+                            :};
+
+CALL_BODY                   ::= CALL_BODY:body comma VALUE:value
+                            {:
+                              try{
+                                String fun_id = body.getFunId();
+                                int num_params = body.getNumParams();
+                                TipoSubyacente subType;
+
+                                if(value.getTipo() == Tipo.dnull){
+                                  subType = value.getTipoSubyacente();
+                                }
+                                else{
+                                  if(value.getTipo() != Tipo.dvar && value.getTipo() != Tipo.dconst && value.getTipo() != Tipo.darg){
+                                    String from = valuexleft.getLine() + ":" + valuexleft.getColumn();
+                                    String to = valuexright.getLine() + ":" + valuexright.getColumn();
+                                    String message = fun_id + ". Incorrect type for param "+ num_params + " from "+from+" to "+to;
+                                    throw new SemanticError(message);
+                                  }
+                                  Type value_type = symbolsTable.get(value.getTypeName());
+                                  subType = value_type.getTipoSubyacente();
+                                }
+
+                                //Check param type with function param type
+                                Type paramType = symbolsTable.getParam(fun_id, num_params);
+                                TipoSubyacente paramSubType = symbolsTable.get(paramType.getTypeName()).getTipoSubyacente();
+
+                                if(paramSubType != subType){
+                                  String from = valuexleft.getLine() + ":" + valuexleft.getColumn();
+                                  String to = valuexright.getLine() + ":" + valuexright.getColumn();
+                                  String message = fun_id + ". Incorrect type for param " + num_params + ". Expected " + subType + " but got " + paramSubType + " from "+from+" to "+to;
+                                  throw new SemanticError(message);
+                                }
+
+                                String fun_back_id = body.getFunBackId();
+                                c3a_g.generateC3aInstr(
+                                  Code.param,
+                                  value.getVarId(),
+                                  null,
+                                  fun_back_id
+                                );
+
+                                RESULT = new SymbolCallBody(fun_id, fun_back_id, num_params+1);
+                              }catch(SymbolsTableError e){
+                                throw new SemanticError(e.getMessage());
+                              }
+                            :}
+                            | id:fun_id lparen VALUE:value
+                            {:
+                              try{
+                                TipoSubyacente subType;
+
+                                if(value.getTipo() == Tipo.dnull){
+                                  subType = value.getTipoSubyacente();
+                                }
+                                else{
+                                  if(value.getTipo() != Tipo.dvar && value.getTipo() != Tipo.dconst && value.getTipo() != Tipo.darg){
+                                    String from = valuexleft.getLine() + ":" + valuexleft.getColumn();
+                                    String to = valuexright.getLine() + ":" + valuexright.getColumn();
+                                    String message = fun_id + ". Incorrect type for param 0" + " from "+from+" to "+to;
+                                    throw new SemanticError(message);
+                                  }
+                                  Type value_type = symbolsTable.get(value.getTypeName());
+                                  subType = value_type.getTipoSubyacente();
+                                }
+
+                                //Check param type with function param type
+                                Type paramType = symbolsTable.getParam(fun_id, 0);
+                                TipoSubyacente paramSubType = symbolsTable.get(paramType.getTypeName()).getTipoSubyacente();
+
+                                if(paramSubType != subType){
+                                  String from = valuexleft.getLine() + ":" + valuexleft.getColumn();
+                                  String to = valuexright.getLine() + ":" + valuexright.getColumn();
+                                  String message = fun_id + ". Incorrect type for param 0. Expected " + subType + " but got " + paramSubType + " from "+from+" to "+to;
+                                  throw new SemanticError(message);
+                                }
+
+                                Type fun_type = symbolsTable.get(fun_id);
+                                String fun_back_id = fun_type.getBackendId();
+
+                                c3a_g.generateC3aInstr(
+                                  Code.param,
+                                  value.getVarId(),
+                                  null,
+                                  fun_back_id
+                                );
+
+                                RESULT = new SymbolCallBody(fun_id, fun_back_id, 0+1);
+                              }catch(SymbolsTableError e){
+                                String from = fun_idxleft.getLine() + ":" + fun_idxleft.getColumn();
+                                String to = fun_idxright.getLine() + ":" + fun_idxright.getColumn();
+                                String message = e.getMessage() + " from "+from+" to "+to;
+                                throw new SemanticError(message);
+                              }
+                            :};
+
+INSTRUCTION_OUT             ::= instr_print lparen VALUE:value rparen
+                            {:
+                              try{
+                                String var_id = value.getVarId();
+                                TipoSubyacente subtype;
+
+                                if(value.getTipo() == Tipo.dnull){
+                                  subtype = value.getTipoSubyacente();
+                                }else{
+                                  Type var_type = symbolsTable.get(value.getTypeName());
+                                  subtype = var_type.getTipoSubyacente();
+                                }
+
+                                if(value.getTipo() == Tipo.dnull && value.getTipoSubyacente() == TipoSubyacente.TS_STRING){
+                                  var_id = backend.addTempStrVar(value.getStringSize(), (String) value.getValue());
+                                  c3a_g.generateC3aInstr(
+                                    Code.output,
+                                    subtype.toString(),
+                                    (String) value.getValue(),
+                                    var_id
+                                  );
+                                }else{
+                                  c3a_g.generateC3aInstr(
+                                    Code.output,
+                                    subtype.toString(),
+                                    null,
+                                    var_id
+                                  );
+                                }
+                                RESULT = new SymbolInstructionOut();
+                              }catch(SymbolsTableError e){
+                                throw new SemanticError(e.getMessage());
+                              }
+                            :};
+
+DEFINE_FUNCTION             ::= FUNCTION_INIT:fun_init lbracket BLOCK_IN FUNCTION_INSTRUCTIONS FUNCTION_RETURN:fun_ret BLOCK_OUT rbracket
+                            {:
+                              //check if fun type and return type are the same
+                              if(fun_init.getTipoSubyacente() != fun_ret.getTipoSubyacente()) {
+                                String from = fun_retxleft.getLine() + ":" + fun_retxleft.getColumn();
+                                String to = fun_retxright.getLine() + ":" + fun_retxright.getColumn();
+                                String message = "Invalid return type. Expected : "+fun_init.getTipoSubyacente()+", but got: "+fun_ret.getTipoSubyacente() + " from "+from+" to "+to;
+                                throw new SemanticError(message);
+                              }
+
+                              // no return value
+                              if(fun_init.getTipoSubyacente() == TipoSubyacente.TS_NULL){
+                                c3a_g.generateC3aInstr(
+                                  Code.rtn,
+                                  null,
+                                  null,
+                                  fun_init.getFunId()
+                                );
+                              }
+                              // return value
+                              else{
+
+                                c3a_g.generateC3aInstr(
+                                  Code.rtn,
+                                  fun_ret.getVarId(),
+                                  null,
+                                  fun_init.getFunId()
+                                );
+                              }
+
+                              RESULT = new SymbolDefFunction();
+                            :};
+
+FUNCTION_INIT               ::= inst_function id:fun_id FUNCTION_PARAMS:fun_params rparen two_points id:type_id
+                            {:
+                              try{
+                                // check return type
+                                Type return_fun_type = symbolsTable.get(type_id);
+                                if(return_fun_type.getTipo() != Tipo.dtype){
+                                  String from = type_idxleft.getLine() + ":" + type_idxleft.getColumn();
+                                  String to = type_idxright.getLine() + ":" + type_idxright.getColumn();
+                                  String message = "Function declaration : invalid type" + " from "+from+" to "+to;
+                                  throw new SemanticError(message);
+                                }
+                                if(return_fun_type.getTipoSubyacente() == TipoSubyacente.TS_STRING){
+                                  String from = type_idxleft.getLine() + ":" + type_idxleft.getColumn();
+                                  String to = type_idxright.getLine() + ":" + type_idxright.getColumn();
+                                  String message = "Invalid return type : "+type_id+". Valid return types are : boolean or number" + " from "+from+" to "+to;
+                                  throw new SemanticError(message);
+                                }
+
+                                TipoSubyacente subType = return_fun_type.getTipoSubyacente();
+                                ArrayList<Param> params = fun_params.getParams();
+                                String backId = backend.addProc(fun_id, params.size(), 0, 0, subType);
+
+                                Type fun_type = new Type(backId, Tipo.dfun, type_id);
+
+                                symbolsTable.add(fun_id, fun_type);
+
+                                // add params if it has
+                                for(Param param : params){
+                                  Type param_type = param.getType();
+                                  TipoSubyacente param_subType = symbolsTable.get(param.getType().getTypeName()).getTipoSubyacente();
+                                  String param_backId = backend.addVar(param.getVarId(), param.getSize(), param_subType, true);
+                                  param_type.setBackendId(param_backId);
+                                  symbolsTable.addParam(fun_id, param_backId, param.getVarId(), param_type);
+                                }
+
+                                c3a_g.generateC3aInstr(
+                                  Code.skip,
+                                  null,
+                                  null,
+                                  backId
+                                );
+
+                                c3a_g.generateC3aInstr(
+                                  Code.pmb,
+                                  null,
+                                  null,
+                                  backId
+                                );
+
+                                RESULT = new SymbolFunInit(backId, subType);
+                              }catch(SymbolsTableError e){
+                                String from = type_idxleft.getLine() + ":" + type_idxleft.getColumn();
+                                String to = type_idxright.getLine() + ":" + type_idxright.getColumn();
+                                String message = e.getMessage() + " from "+from+" to "+to;
+                                throw new SemanticError(message);
+                              }
+                            :};
+
+FUNCTION_PARAMS             ::= FUNCTION_W_PARAMS:params
+                            {:
+                              RESULT = new SymbolFunParams(params.getParams());
+                            :}
+                            | lparen
+                            {:
+                              RESULT = new SymbolFunParams();
+                            :};
+
+FUNCTION_W_PARAMS           ::= FUNCTION_W_PARAMS:prev_params comma id:id two_points id:type_id
+                            {:
+                              try{
+                                //check param type
+                                Type type_type = symbolsTable.get(type_id);
+                                if(type_type.getTipo() != Tipo.dtype){
+                                  String from = idxleft.getLine() + ":" + idxleft.getColumn();
+                                  String to = type_idxright.getLine() + ":" + type_idxright.getColumn();
+                                  String message = "Invalid param type" + " from "+from+" to "+to;
+                                  throw new SemanticError(message);
+                                }
+                                if(type_type.getTipoSubyacente() == TipoSubyacente.TS_STRING){
+                                  String from = idxleft.getLine() + ":" + idxleft.getColumn();
+                                  String to = type_idxright.getLine() + ":" + type_idxright.getColumn();
+                                  String message = "Invalid param type : "+type_id+". Valid params types are : boolean or number" + " from "+from+" to "+to;
+                                  throw new SemanticError(message);
+                                }
+
+                                Type param_type = new Type(Tipo.darg, type_id);
+
+                                Param param = new Param(id, param_type, type_type.getSize());
+
+                                RESULT = new SymbolFunWParams(param, prev_params);
+                              }catch(SymbolsTableError e){
+                                String from = type_idxleft.getLine() + ":" + type_idxleft.getColumn();
+                                String to = type_idxright.getLine() + ":" + type_idxright.getColumn();
+                                String message = e.getMessage() + " from "+from+" to "+to;
+                                throw new SemanticError(message);
+                              }
+                            :}
+                            | lparen id:id two_points id:type_id
+                            {:
+                              try{
+                                //check param type
+                                Type type_type = symbolsTable.get(type_id);
+                                if(type_type.getTipo() != Tipo.dtype){
+                                  String from = idxleft.getLine() + ":" + idxleft.getColumn();
+                                  String to = type_idxright.getLine() + ":" + type_idxright.getColumn();
+                                  String message = "Invalid param type" + " from "+from+" to "+to;
+                                  throw new SemanticError(message);
+                                }
+                                if(type_type.getTipoSubyacente() == TipoSubyacente.TS_STRING){
+                                  String from = idxleft.getLine() + ":" + idxleft.getColumn();
+                                  String to = type_idxright.getLine() + ":" + type_idxright.getColumn();
+                                  String message = "Invalid param type : "+type_id+". Valid params types are : boolean or number" + " from "+from+" to "+to;
+                                  throw new SemanticError(message);
+                                }
+
+                                Type param_type = new Type(Tipo.darg, type_id);
+
+                                Param param = new Param(id, param_type, type_type.getSize());
+
+                                RESULT = new SymbolFunWParams(param);
+                              }catch(SymbolsTableError e){
+                                String from = type_idxleft.getLine() + ":" + type_idxleft.getColumn();
+                                String to = type_idxright.getLine() + ":" + type_idxright.getColumn();
+                                String message = e.getMessage() + " from "+from+" to "+to;
+                                throw new SemanticError(message);
+                              }
+                            :};
+
+FUNCTION_INSTRUCTIONS       ::= INSTRUCTIONS
+                            {:
+                              RESULT = new SymbolFunInstructions();
+                            :}
+                            |
+                            {:
+                              RESULT = new SymbolFunInstructions();
+                            :};
+
+FUNCTION_RETURN             ::= inst_return VALUE:value semicolon
+                            {:
+                              try{
+                                // is literall
+                                TipoSubyacente subType = null;
+                                if(value.getTipo() == Tipo.dnull){
+                                  subType = value.getTipoSubyacente();
+                                }
+
+                                // is variable
+                                if(value.getTipo() != Tipo.dnull){
+                                  Type type_type = symbolsTable.get(value.getTypeName());
+                                  subType = type_type.getTipoSubyacente();
+                                }
+
+                                RESULT = new SymbolFunReturn(value.getVarId(), subType);
+                              }catch(SymbolsTableError e){
+                                throw new SemanticError(e.getMessage());
+                              }
+                            :}
+                            // | inst_return
+                            | EMPTY
+                            {:
+                              RESULT = new SymbolFunReturn();
+                            :};
+
+EMPTY                       ::= {: RESULT = new SymbolEmpty(); :};

@@ -1,0 +1,57 @@
+---------------------------------------------
+---------------- TABLES INFO ----------------
+---------------------------------------------
+Variables:
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+null
+
+Procedures:
+factorial	nparams=1	type=number
+recursiveAdding	nparams=1	type=number
+main	nparams=0	type=null
+
+Labels:
+compilador.src.backend.Label@6aa8ceb6
+compilador.src.backend.Label@2530c12
+compilador.src.backend.Label@73c6c3b2
+compilador.src.backend.Label@48533e64
+compilador.src.backend.Label@64a294a6
+compilador.src.backend.Label@7e0b37bc
+compilador.src.backend.Label@3b95a09c
+compilador.src.backend.Label@6ae40994
+compilador.src.backend.Label@1a93a7ca
