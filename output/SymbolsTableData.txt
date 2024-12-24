@@ -1,0 +1,1097 @@
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 1 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 0 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	ADD : number
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 1 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 0 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	ADD : string
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 1 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 0 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	ADD : boolean
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 1 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 0 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : boolean TIPO: dtype TIPO SUBYACENTE: boolean SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	ADD : void
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 1 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 0 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : boolean TIPO: dtype TIPO SUBYACENTE: boolean SCOPE: 1
+ID : void TIPO: dtype TIPO SUBYACENTE: null SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	ADD : factorial
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 1 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 0 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : boolean TIPO: dtype TIPO SUBYACENTE: boolean SCOPE: 1
+ID : void TIPO: dtype TIPO SUBYACENTE: null SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+ID : factorial TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: -1
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	ADD PARAM: num_0_1 function : factorial
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 1 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 1 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : boolean TIPO: dtype TIPO SUBYACENTE: boolean SCOPE: 1
+ID : void TIPO: dtype TIPO SUBYACENTE: null SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+ID : factorial TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 0
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+ID : num_0_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : factorial NEXT : -1
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	ENTER BLOCK : increase scope
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 2 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 1 value
+scope:2, pointing at: 1 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : boolean TIPO: dtype TIPO SUBYACENTE: boolean SCOPE: 1
+ID : void TIPO: dtype TIPO SUBYACENTE: null SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+ID : factorial TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 0
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+ID : num_0_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : factorial NEXT : -1
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	ADD : result
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 2 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 1 value
+scope:2, pointing at: 1 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : result TIPO: dvar TIPO SUBYACENTE: null SCOPE: 2
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : boolean TIPO: dtype TIPO SUBYACENTE: boolean SCOPE: 1
+ID : void TIPO: dtype TIPO SUBYACENTE: null SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+ID : factorial TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 0
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+ID : num_0_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : factorial NEXT : -1
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	ENTER BLOCK : increase scope
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 3 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 1 value
+scope:2, pointing at: 1 value
+scope:3, pointing at: 1 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : result TIPO: dvar TIPO SUBYACENTE: null SCOPE: 2
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : boolean TIPO: dtype TIPO SUBYACENTE: boolean SCOPE: 1
+ID : void TIPO: dtype TIPO SUBYACENTE: null SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+ID : factorial TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 0
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+ID : num_0_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : factorial NEXT : -1
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	LEAVE BLOCK : decrease scope
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 2 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 1 value
+scope:2, pointing at: 1 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : result TIPO: dvar TIPO SUBYACENTE: null SCOPE: 2
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : boolean TIPO: dtype TIPO SUBYACENTE: boolean SCOPE: 1
+ID : void TIPO: dtype TIPO SUBYACENTE: null SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+ID : factorial TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 0
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+ID : num_0_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : factorial NEXT : -1
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	ENTER BLOCK : increase scope
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 3 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 1 value
+scope:2, pointing at: 1 value
+scope:3, pointing at: 1 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : result TIPO: dvar TIPO SUBYACENTE: null SCOPE: 2
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : boolean TIPO: dtype TIPO SUBYACENTE: boolean SCOPE: 1
+ID : void TIPO: dtype TIPO SUBYACENTE: null SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+ID : factorial TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 0
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+ID : num_0_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : factorial NEXT : -1
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	LEAVE BLOCK : decrease scope
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 2 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 1 value
+scope:2, pointing at: 1 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : result TIPO: dvar TIPO SUBYACENTE: null SCOPE: 2
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : boolean TIPO: dtype TIPO SUBYACENTE: boolean SCOPE: 1
+ID : void TIPO: dtype TIPO SUBYACENTE: null SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+ID : factorial TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 0
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+ID : num_0_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : factorial NEXT : -1
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	LEAVE BLOCK : decrease scope
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 1 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 1 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : boolean TIPO: dtype TIPO SUBYACENTE: boolean SCOPE: 1
+ID : void TIPO: dtype TIPO SUBYACENTE: null SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+ID : factorial TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 0
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+ID : num_0_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : factorial NEXT : -1
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	ADD : recursiveAdding
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 1 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 1 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : boolean TIPO: dtype TIPO SUBYACENTE: boolean SCOPE: 1
+ID : void TIPO: dtype TIPO SUBYACENTE: null SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+ID : factorial TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 0
+ID : recursiveAdding TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: -1
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+ID : num_0_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : factorial NEXT : -1
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	ADD PARAM: num_1_1 function : recursiveAdding
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 1 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 2 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : boolean TIPO: dtype TIPO SUBYACENTE: boolean SCOPE: 1
+ID : void TIPO: dtype TIPO SUBYACENTE: null SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+ID : factorial TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 0
+ID : recursiveAdding TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 1
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+ID : num_0_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : factorial NEXT : -1
+ID : num_1_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : recursiveAdding NEXT : -1
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	ENTER BLOCK : increase scope
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 2 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 2 value
+scope:2, pointing at: 2 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : boolean TIPO: dtype TIPO SUBYACENTE: boolean SCOPE: 1
+ID : void TIPO: dtype TIPO SUBYACENTE: null SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+ID : factorial TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 0
+ID : recursiveAdding TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 1
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+ID : num_0_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : factorial NEXT : -1
+ID : num_1_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : recursiveAdding NEXT : -1
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	ADD : result
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 2 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 2 value
+scope:2, pointing at: 2 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : result TIPO: dvar TIPO SUBYACENTE: null SCOPE: 2
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : boolean TIPO: dtype TIPO SUBYACENTE: boolean SCOPE: 1
+ID : void TIPO: dtype TIPO SUBYACENTE: null SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+ID : factorial TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 0
+ID : recursiveAdding TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 1
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+ID : num_0_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : factorial NEXT : -1
+ID : num_1_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : recursiveAdding NEXT : -1
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	ENTER BLOCK : increase scope
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 3 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 2 value
+scope:2, pointing at: 2 value
+scope:3, pointing at: 2 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : result TIPO: dvar TIPO SUBYACENTE: null SCOPE: 2
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : boolean TIPO: dtype TIPO SUBYACENTE: boolean SCOPE: 1
+ID : void TIPO: dtype TIPO SUBYACENTE: null SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+ID : factorial TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 0
+ID : recursiveAdding TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 1
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+ID : num_0_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : factorial NEXT : -1
+ID : num_1_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : recursiveAdding NEXT : -1
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	LEAVE BLOCK : decrease scope
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 2 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 2 value
+scope:2, pointing at: 2 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : result TIPO: dvar TIPO SUBYACENTE: null SCOPE: 2
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : boolean TIPO: dtype TIPO SUBYACENTE: boolean SCOPE: 1
+ID : void TIPO: dtype TIPO SUBYACENTE: null SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+ID : factorial TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 0
+ID : recursiveAdding TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 1
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+ID : num_0_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : factorial NEXT : -1
+ID : num_1_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : recursiveAdding NEXT : -1
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	ENTER BLOCK : increase scope
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 3 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 2 value
+scope:2, pointing at: 2 value
+scope:3, pointing at: 2 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : result TIPO: dvar TIPO SUBYACENTE: null SCOPE: 2
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : boolean TIPO: dtype TIPO SUBYACENTE: boolean SCOPE: 1
+ID : void TIPO: dtype TIPO SUBYACENTE: null SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+ID : factorial TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 0
+ID : recursiveAdding TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 1
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+ID : num_0_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : factorial NEXT : -1
+ID : num_1_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : recursiveAdding NEXT : -1
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	LEAVE BLOCK : decrease scope
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 2 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 2 value
+scope:2, pointing at: 2 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : result TIPO: dvar TIPO SUBYACENTE: null SCOPE: 2
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : boolean TIPO: dtype TIPO SUBYACENTE: boolean SCOPE: 1
+ID : void TIPO: dtype TIPO SUBYACENTE: null SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+ID : factorial TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 0
+ID : recursiveAdding TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 1
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+ID : num_0_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : factorial NEXT : -1
+ID : num_1_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : recursiveAdding NEXT : -1
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	ENTER BLOCK : increase scope
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 3 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 2 value
+scope:2, pointing at: 2 value
+scope:3, pointing at: 2 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : result TIPO: dvar TIPO SUBYACENTE: null SCOPE: 2
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : boolean TIPO: dtype TIPO SUBYACENTE: boolean SCOPE: 1
+ID : void TIPO: dtype TIPO SUBYACENTE: null SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+ID : factorial TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 0
+ID : recursiveAdding TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 1
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+ID : num_0_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : factorial NEXT : -1
+ID : num_1_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : recursiveAdding NEXT : -1
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	LEAVE BLOCK : decrease scope
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 2 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 2 value
+scope:2, pointing at: 2 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : result TIPO: dvar TIPO SUBYACENTE: null SCOPE: 2
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : boolean TIPO: dtype TIPO SUBYACENTE: boolean SCOPE: 1
+ID : void TIPO: dtype TIPO SUBYACENTE: null SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+ID : factorial TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 0
+ID : recursiveAdding TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 1
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+ID : num_0_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : factorial NEXT : -1
+ID : num_1_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : recursiveAdding NEXT : -1
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	LEAVE BLOCK : decrease scope
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 1 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 2 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : boolean TIPO: dtype TIPO SUBYACENTE: boolean SCOPE: 1
+ID : void TIPO: dtype TIPO SUBYACENTE: null SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+ID : factorial TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 0
+ID : recursiveAdding TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 1
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+ID : num_0_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : factorial NEXT : -1
+ID : num_1_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : recursiveAdding NEXT : -1
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	ADD : main
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 1 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 2 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : boolean TIPO: dtype TIPO SUBYACENTE: boolean SCOPE: 1
+ID : void TIPO: dtype TIPO SUBYACENTE: null SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+ID : factorial TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 0
+ID : recursiveAdding TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 1
+ID : main TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: -1
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+ID : num_0_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : factorial NEXT : -1
+ID : num_1_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : recursiveAdding NEXT : -1
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	ENTER BLOCK : increase scope
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 2 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 2 value
+scope:2, pointing at: 2 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : boolean TIPO: dtype TIPO SUBYACENTE: boolean SCOPE: 1
+ID : void TIPO: dtype TIPO SUBYACENTE: null SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+ID : factorial TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 0
+ID : recursiveAdding TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 1
+ID : main TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: -1
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+ID : num_0_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : factorial NEXT : -1
+ID : num_1_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : recursiveAdding NEXT : -1
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	ADD : numA
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 2 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 2 value
+scope:2, pointing at: 2 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : boolean TIPO: dtype TIPO SUBYACENTE: boolean SCOPE: 1
+ID : void TIPO: dtype TIPO SUBYACENTE: null SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+ID : factorial TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 0
+ID : recursiveAdding TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 1
+ID : numA TIPO: dvar TIPO SUBYACENTE: null SCOPE: 2
+ID : main TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: -1
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+ID : num_0_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : factorial NEXT : -1
+ID : num_1_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : recursiveAdding NEXT : -1
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	ADD : numB
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 2 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 2 value
+scope:2, pointing at: 2 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : boolean TIPO: dtype TIPO SUBYACENTE: boolean SCOPE: 1
+ID : void TIPO: dtype TIPO SUBYACENTE: null SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+ID : factorial TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 0
+ID : recursiveAdding TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 1
+ID : numA TIPO: dvar TIPO SUBYACENTE: null SCOPE: 2
+ID : main TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: -1
+ID : numB TIPO: dvar TIPO SUBYACENTE: null SCOPE: 2
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+ID : num_0_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : factorial NEXT : -1
+ID : num_1_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : recursiveAdding NEXT : -1
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
+-----------------------------------------------
+----------------- ACTION DONE -----------------
+	LEAVE BLOCK : decrease scope
+-----------------------------------------------
+
+-----------------------------------------------
+------------- SYMBOLS TABLE DATA -------------- 
+-----------------------------------------------
+
+-----------------------------------------------
+--------------- SCOPE INFO : 1 ----------------
+scope:0, pointing at: 0 value
+scope:1, pointing at: 2 value
+-----------------------------------------------
+
+-----------------------------------------------
+-------------- DESCRIPTION TABLE --------------
+
+ID : number TIPO: dtype TIPO SUBYACENTE: number SCOPE: 1
+ID : boolean TIPO: dtype TIPO SUBYACENTE: boolean SCOPE: 1
+ID : void TIPO: dtype TIPO SUBYACENTE: null SCOPE: 1
+ID : string TIPO: dtype TIPO SUBYACENTE: string SCOPE: 1
+ID : factorial TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 0
+ID : recursiveAdding TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: 1
+ID : main TIPO: dfun TIPO SUBYACENTE: null SCOPE: 1 FIRST: -1
+
+-----------------------------------------------
+
+-----------------------------------------------
+------------- EXPANSION TABLE -----------------
+
+ID : num_0_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : factorial NEXT : -1
+ID : num_1_1 TIPO: darg TIPO SUBYACENTE: null SCOPE : -1 FUNCTION : recursiveAdding NEXT : -1
+
+-----------------------------------------------
+
+-------------- END SYMBOLS TABLE --------------
+
